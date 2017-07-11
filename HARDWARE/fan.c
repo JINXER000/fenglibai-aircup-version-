@@ -2,6 +2,7 @@
 #include "pwm.h"
 #include "math.h"
 #include "ospid.h"
+#include "indkey.h"
 
 extern 	float pitch,roll,yaw;
 extern short aacx,aacy,aacz,gyrox,gyroy,gyroz;
@@ -11,8 +12,8 @@ const float priod=1554.7;
 
 
 int workstate=4,lastworkstate,startflag;
-int ctrlx,ctrly;
-float anglexy,     
+int ctrlx,ctrly;                              //pwm order
+float setanglexy,     
 	   anglegoal,
      anglenow,
 			pitchgoal,
@@ -147,6 +148,7 @@ void dotask4()
 }
 int getworkstate()                                     //get input from button
 {
+	KeyScan();
 	if(lastworkstate!=workstate)        
 	{
 		initconfig();

@@ -1,9 +1,25 @@
 #include "timer.h"
 #include "fan.h"
 #include "mpu6050.h"
-//change to tim 14 if possible
+#include "Kalman_filter.h"
+#include "ANO-Tech.h"
 
-void TIM6_Int_Init(u16 arr,u16 psc)  //arr=1000, psc=840  
+
+extern float Angle,Gyro_x;         //小车滤波后倾斜角度/角速度	
+extern float Angle_x_temp;  //由加速度计算的x倾斜角度
+extern float Angle_y_temp;  //由加速度计算的y倾斜角度
+extern float Angle_z_temp;
+extern float Angle_X_Final; //X最终倾斜角度
+extern float Angle_Y_Final; //Y最终倾斜角度
+extern float Angle_Z_Final; //Z最终倾斜角度
+extern float Gyro_x;		 //X轴陀螺仪数据暂存
+extern float Gyro_y;        //Y轴陀螺仪数据暂存
+extern float Gyro_z;		 //Z轴陀螺仪数据暂存
+extern 	short aacx,aacy,aacz;		//加速度传感器原始数据
+extern	short gyrox,gyroy,gyroz;	//陀螺仪原始数据
+
+
+void TIM6_Int_Init(u16 arr,u16 psc)  //arr=500, psc=840  
 {
 	
 	    TIM_TimeBaseInitTypeDef  tim;
@@ -33,58 +49,15 @@ void TIM6_DAC_IRQHandler(void)
 	
     if (TIM_GetITStatus(TIM6,TIM_IT_Update)!= RESET) 
 	  {
-////	scan key
-//		uint8_t i = 0;
-//	float pitch_temp1 = 0.0;
-//	float roll_temp1 = 0.0;
-//	float pitch_temp2 = 0.0;
-//	float roll_temp2 = 0.0;
-//	static float pitch_sum = 0.0;
-//	static float roll_sum = 0.0;
-//		
-////	GPIOE->BSRR = GPIO_Pin_3;
-//	if(TIM_GetITStatus(TIM5,TIM_IT_Update) == SET)
-//	{		
+			
+//get angle ,calc and filter
+			MPU_Get_Accelerometer(&aacx,&aacy,&aacz);	//得到加速度传感器数据
+			MPU_Get_Gyroscope(&gyrox,&gyroy,&gyroz);	//得到陀螺仪数据
+			Angle_Calcu();
+			ANO_DT_Send_Senser(Angle_x_temp,Angle_X_Final,(Angle_y_temp),(Angle_Y_Final),(Angle_z_temp),(Angle_Z_Final));      // compare the raw data and processed data
 
-//		
-//		for(i=0;i<3;i++)
-//		{
-//			
-//			pitch_temp1 = (atan(aacx/Axis.AccZ)*57.2958-0.4);   //计算Pitch角度 0.4为静态偏差角
-//			roll_temp1  = (atan(Axis.AccY/Axis.AccZ)*57.2958-0.3);   //计算Roll角度  0.3为静态偏差角
-//			
-//			pitch_sum += pitch_temp1;
-//			roll_sum  += roll_temp1;
-//		}
-//		
-//		pitch_temp1 = pitch_sum / 3.0;	 //取出平均值
-//		roll_temp1  = roll_sum  / 3.0;	 //取出平均值
-
-//		pitch_sum = 0.0;
-//		roll_sum = 0.0;
-//		
-//		EulerAngle.Pitch = Kalman_Filter(pitch_temp1,Axis.GyroY);       //卡尔曼滤波器
-//		EulerAngle.Roll  = Kalman_Filter(roll_temp1,-Axis.GyroX);       //卡尔曼滤波器
-//		
-//		M1.CurPos = EulerAngle.Pitch; 
-//		M2.CurPos = EulerAngle.Roll;						   
-//		
-//		//计算速度
-//		M1.CurSpeed = M1.CurPos - M1.PrevPos;
-//		M1.PrevPos = M1.CurPos;				
-//		
-
-//				
-//		TIM_ClearITPendingBit(TIM5,TIM_IT_Update);		
-//	}
-//	GPIOE->BRR = GPIO_Pin_3;				
-
-
-
-
-
-//			
-		controltask();
+		
+	//		controltask();
 			
 			
     }

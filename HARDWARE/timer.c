@@ -19,7 +19,7 @@ extern 	short aacx,aacy,aacz;		//加速度传感器原始数据
 extern	short gyrox,gyroy,gyroz;	//陀螺仪原始数据
 
 
-void TIM6_Int_Init(u16 arr,u16 psc)  //arr=500, psc=840  
+void TIM6_Int_Init(int psc,int prd)  //arr=500, psc=840  
 {
 	
 	    TIM_TimeBaseInitTypeDef  tim;
@@ -33,10 +33,10 @@ void TIM6_Int_Init(u16 arr,u16 psc)  //arr=500, psc=840
     nvic.NVIC_IRQChannelCmd = ENABLE;
     NVIC_Init(&nvic);
 
-    tim.TIM_Prescaler = psc-1;        //84M internal clock
+    tim.TIM_Prescaler = psc;        //84M internal clock =83
     tim.TIM_CounterMode = TIM_CounterMode_Up;
     tim.TIM_ClockDivision = TIM_CKD_DIV1;
-    tim.TIM_Period = arr;  //1ms,1000Hz
+    tim.TIM_Period = prd;  //5ms,200Hz   
     TIM_TimeBaseInit(TIM6,&tim);
 		
 		TIM_ITConfig(TIM6,TIM_IT_Update,ENABLE); //允许定时器3更新中断
@@ -51,10 +51,10 @@ void TIM6_DAC_IRQHandler(void)
 	  {
 			
 //get angle ,calc and filter
-			MPU_Get_Accelerometer(&aacx,&aacy,&aacz);	//得到加速度传感器数据
-			MPU_Get_Gyroscope(&gyrox,&gyroy,&gyroz);	//得到陀螺仪数据
-			Angle_Calcu();
-			ANO_DT_Send_Senser(Angle_x_temp,Angle_X_Final,(Angle_y_temp),(Angle_Y_Final),(Angle_z_temp),(Angle_Z_Final));      // compare the raw data and processed data
+//			MPU_Get_Accelerometer(&aacx,&aacy,&aacz);	//得到加速度传感器数据
+//			MPU_Get_Gyroscope(&gyrox,&gyroy,&gyroz);	//得到陀螺仪数据
+//			Angle_Calcu();
+//			ANO_DT_Send_Senser(Angle_x_temp,Angle_X_Final,(Angle_y_temp),(Angle_Y_Final),(Angle_z_temp),(Angle_Z_Final));      // compare the raw data and processed data
 
 		
 	//		controltask();

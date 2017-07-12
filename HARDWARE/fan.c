@@ -28,36 +28,19 @@ float wuchajiao,wuchasu;
 void fantest()
 {
 		PWM1=500;
-	PWM2=1000;
-	PWM3=1500;
-	PWM4=2300;
+	PWM2=500;
+	PWM3=500;
+	PWM4=300;
 
 	
 	PWM5=500;
-	PWM6=1000;
-	PWM7=1500;
-	PWM8=2300;
+	PWM6=500;
+	PWM7=500;
+	PWM8=300;
 
 }
 void fanmove(int pwmx,int pwmy)     
 {
-//	startflag=1;	                                 //swing
-//	if(anglenow>0||anglenow<wuchajiao)
-//		{
-//			if(gyrox>0)   
-//			{
-//				//m3++,m1=0
-//			}
-//			else
-//			{
-//				//m1++,m3=0
-//			}
-//		if(anglenow>wuchajiao)	
-//		{
-//			
-//		}
-//		}
-//		startflag=0;
 	if(pwmx>0)
 	{		
 		PWM8=pwmx;
@@ -77,7 +60,7 @@ void fanmove(int pwmx,int pwmy)
 	}
 	else
 	{
-		PWM6=0;					//m4 backward
+		PWM6=pwmy;					//m4 backward
 		PWM5=0;
 
 	}
@@ -125,18 +108,22 @@ void dotask4()
 		if(fabs(pitch)<45&&fabs(roll)<45)
 		{
 			pitchgoal=0;
-			PitchOPID.P=80;
+			PitchOPID.P=2;
 			PitchOPID.I=0;
-			PitchOPID.D=1000;
+			PitchOPID.D=100;
 			ctrlx=Control_PitchPID();
 			
 			rollgoal=0;
-			RollOPID.P=80;
+			RollOPID.P=2;
 			RollOPID.I=0;
-			RollOPID.D=1000;
+			RollOPID.D=100;
 			ctrly=Control_RollPID();
+			
+			fanmove(0,800);
 		
-			fanmove(ctrlx,ctrly);
+//			fanmove(ctrlx,ctrly);
+//						fantest();
+
 		}
 }
 int getworkstate()                                     //get input from button

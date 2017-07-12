@@ -21,7 +21,7 @@ extern 	short aacx,aacy,aacz;		//加速度传感器原始数据
 extern	short gyrox,gyroy,gyroz;	//陀螺仪原始数据
 extern float pitch,roll,yaw; 		//欧拉角
 extern void usart1_report_imu(short aacx,short aacy,short aacz,short gyrox,short gyroy,short gyroz,short roll,short pitch,short yaw);
-
+extern int ctrlx,ctrly;  
 
 void TIM6_Int_Init(int psc,int prd)  //arr=500, psc=840  
 {
@@ -50,7 +50,8 @@ void TIM6_Int_Init(int psc,int prd)  //arr=500, psc=840
 
 void TIM6_DAC_IRQHandler(void)  
 {
-    if (TIM_GetITStatus(TIM6,TIM_IT_Update)!= RESET) 
+    
+	if (TIM_GetITStatus(TIM6,TIM_IT_Update)!= RESET) 
 	  {
 			
 //get angle ,calc and filter
@@ -60,21 +61,22 @@ void TIM6_DAC_IRQHandler(void)
 			MPU_Get_Gyroscope(&gyrox,&gyroy,&gyroz);	//得到陀螺仪数据
 			if(pitch)
 			{
-			Angle_Calcu();
+		
 			}
-//					i++;
-//					if(i>300){
-//					fanmove(2000,0);
-//						i=0;
-//					}
-			usart1_report_imu(Angle_x_temp,Angle_X_Final,Angle_y_temp,Angle_Y_Final,Angle_z_temp,Angle_Z_Final,(int)(roll*100),(int)(pitch*100),(int)(yaw*10));
+					i++;
+					if(i>300)
+					{
+					  controltask();
+						Angle_Calcu();
+					}
+			usart1_report_imu(Angle_x_temp,Angle_X_Final,Angle_y_temp,Angle_Y_Final,ctrlx/100,ctrly/100,(int)(roll*100),(int)(pitch*100),(int)(yaw*10));
 
 			
 		}
 		
   
 		
-//		controltask();
+		
 			
 			
     }

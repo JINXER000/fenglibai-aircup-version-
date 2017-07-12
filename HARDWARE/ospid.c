@@ -1,7 +1,7 @@
 #include "ospid.h"
 #include "math.h"
 
-PID_Type PitchOPID,PitchIPID,RollIPID,RollOPID;
+extern PID_Type PitchOPID,PitchIPID,RollIPID,RollOPID;
 
 extern float anglexy, anglegoal,anglenow,pitchgoal,rollgoal;
 extern short gyroxgoal,gyroygoal,gyrozgoal;
@@ -57,16 +57,16 @@ int16_t Control_PitchPID(void)
 	PitchOPID.Iout += PitchOPID.I * PitchOPID.CurrentError;
 	PitchOPID.Iout = PitchOPID.Iout > PitchOPID.IMax ? PitchOPID.IMax : PitchOPID.Iout;
 	PitchOPID.Iout = PitchOPID.Iout < -PitchOPID.IMax ? -PitchOPID.IMax : PitchOPID.Iout;
-
-		PitchOPID.Dout = -PitchOPID.D *gyrox;
+	
+		PitchOPID.Dout = -PitchOPID.D *(PitchOPID.CurrentError-PitchOPID.LastError);
 	
 	PitchOPID.PIDout = PitchOPID.Pout + PitchOPID.Iout + PitchOPID.Dout;
 	PitchOPID.PIDout = PitchOPID.PIDout > PitchOPID.PIDMax ? PitchOPID.PIDMax : PitchOPID.PIDout;
 	PitchOPID.PIDout = PitchOPID.PIDout < -PitchOPID.PIDMax ? -PitchOPID.PIDMax : PitchOPID.PIDout;
 	
 		PitchOPID.LastError = PitchOPID.CurrentError;
-
-	return (short)PitchIPID.PIDout;
+return (short)PitchIPID.PIDout;
+	
 }
 
 int16_t Control_RollPID(void)
@@ -78,7 +78,7 @@ int16_t Control_RollPID(void)
 	RollOPID.Iout = RollOPID.Iout > RollOPID.IMax ? RollOPID.IMax : RollOPID.Iout;
 	RollOPID.Iout = RollOPID.Iout < -RollOPID.IMax ? -RollOPID.IMax : RollOPID.Iout;
 
-		RollOPID.Dout = -RollOPID.D *gyroy;
+		RollOPID.Dout = -RollOPID.D *(RollOPID.CurrentError-RollOPID.LastError);
 	
 	RollOPID.PIDout = RollOPID.Pout + RollOPID.Iout + RollOPID.Dout;
 	RollOPID.PIDout = RollOPID.PIDout > RollOPID.PIDMax ? RollOPID.PIDMax : RollOPID.PIDout;

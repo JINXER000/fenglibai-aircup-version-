@@ -2,8 +2,10 @@
 #include "fan.h"
 #include "mpu6050.h"
 #include "Kalman_filter.h"
-#include "ANO-Tech.h"
-
+#include "inv_mpu.h"
+#include "inv_mpu_dmp_motion_driver.h" 
+#include "ospid.h"
+ int i;
 
 extern float Angle,Gyro_x;         //小车滤波后倾斜角度/角速度	
 extern float Angle_x_temp;  //由加速度计算的x倾斜角度
@@ -17,6 +19,8 @@ extern float Gyro_y;        //Y轴陀螺仪数据暂存
 extern float Gyro_z;		 //Z轴陀螺仪数据暂存
 extern 	short aacx,aacy,aacz;		//加速度传感器原始数据
 extern	short gyrox,gyroy,gyroz;	//陀螺仪原始数据
+extern float pitch,roll,yaw; 		//欧拉角
+extern void usart1_report_imu(short aacx,short aacy,short aacz,short gyrox,short gyroy,short gyroz,short roll,short pitch,short yaw);
 
 
 void TIM6_Int_Init(int psc,int prd)  //arr=500, psc=840  
@@ -46,18 +50,31 @@ void TIM6_Int_Init(int psc,int prd)  //arr=500, psc=840
 
 void TIM6_DAC_IRQHandler(void)  
 {
-	
     if (TIM_GetITStatus(TIM6,TIM_IT_Update)!= RESET) 
 	  {
 			
 //get angle ,calc and filter
-//			MPU_Get_Accelerometer(&aacx,&aacy,&aacz);	//得到加速度传感器数据
-//			MPU_Get_Gyroscope(&gyrox,&gyroy,&gyroz);	//得到陀螺仪数据
-//			Angle_Calcu();
-//			ANO_DT_Send_Senser(Angle_x_temp,Angle_X_Final,(Angle_y_temp),(Angle_Y_Final),(Angle_z_temp),(Angle_Z_Final));      // compare the raw data and processed data
+		if(mpu_dmp_get_data(&pitch,&roll,&yaw)==0)
+		{ 
+			MPU_Get_Accelerometer(&aacx,&aacy,&aacz);	//得到加速度传感器数据
+			MPU_Get_Gyroscope(&gyrox,&gyroy,&gyroz);	//得到陀螺仪数据
+			if(pitch)
+			{
+			Angle_Calcu();
+			}
+//					i++;
+//					if(i>300){
+//					fanmove(2000,0);
+//						i=0;
+//					}
+			usart1_report_imu(Angle_x_temp,Angle_X_Final,Angle_y_temp,Angle_Y_Final,Angle_z_temp,Angle_Z_Final,(int)(roll*100),(int)(pitch*100),(int)(yaw*10));
 
+			
+		}
 		
-	//		controltask();
+  
+		
+//		controltask();
 			
 			
     }

@@ -4,10 +4,10 @@
 
 #define Pi 	3.1415926
 //卡尔曼噪声参数
-#define dt           0.03		//	0.012
+#define dt           0.02		//	0.012
 #define R_angle      0.5
-#define Q_angle      0.001
-#define Q_gyro       0.003//越大越滞后
+#define Q_angle      0.1
+#define Q_gyro       0.1//越大越滞后
 
 //引用外部变量
 extern short aacx, aacy, aacz;		//加速度传感器原始数据

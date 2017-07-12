@@ -6,10 +6,10 @@
 #define PWM3  TIM2->CCR3
 #define PWM4 TIM2->CCR4
 
-#define PWM5 TIM3->CCR1
-#define PWM6 TIM3->CCR2
-#define PWM7 TIM3->CCR3
-#define PWM8 TIM3->CCR4
+#define PWM5 TIM3->CCR3
+#define PWM6 TIM3->CCR4
+#define PWM7 TIM3->CCR1
+#define PWM8 TIM3->CCR2
 
 void TIM4_PWM_Init(int psc,int prd);
 void TIM3_PWM_Init (int psc,int prd);

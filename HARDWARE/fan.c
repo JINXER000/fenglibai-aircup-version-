@@ -59,33 +59,26 @@ void fanmove(int pwmx,int pwmy)
 //		}
 //		startflag=0;
 	if(pwmx>0)
-	{
-		PWM1=pwmx;      //m1 forward
-		PWM5=0;
-		PWM3=0;					//m3 backward
-		PWM7=pwmx;
+	{		
+		PWM8=pwmx;
+		PWM7=0;
+
 	}
 	else
 	{
-		PWM1=0;						//m1 backward
-		PWM5=pwmx;
-		PWM3=pwmx;     //m3 forward
-		PWM7=0;
+		PWM8=0;
+		PWM7=pwmx;
 
 	}
 		if(pwmy>0)
 	{
-		PWM2=pwmy;      //m2 forward
-		PWM6=0;
-		PWM4=0;					//m4 backward
-		PWM8=pwmy;
+		PWM6=0;					//m4 backward
+		PWM5=pwmy;
 	}
 	else
 	{
-		PWM2=0;						//m2 backward
-		PWM6=pwmy;
-		PWM4=pwmy;     //m4 forward
-		PWM8=0;
+		PWM6=0;					//m4 backward
+		PWM5=0;
 
 	}
 

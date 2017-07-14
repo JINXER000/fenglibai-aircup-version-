@@ -124,9 +124,9 @@ void TIM3_PWM_Init(int psc,int prd)
 	TIM_OC1Init(TIM3, &TIM3_OCInitStructure);  
 	TIM_OC2PreloadConfig(TIM3, TIM_OCPreload_Enable);
 	TIM_OC2Init(TIM3, &TIM3_OCInitStructure);        
-	TIM_OC3PreloadConfig(TIM5, TIM_OCPreload_Enable);
+	TIM_OC3PreloadConfig(TIM3, TIM_OCPreload_Enable);
 	TIM_OC3Init(TIM3, &TIM3_OCInitStructure);  
-	TIM_OC4PreloadConfig(TIM5, TIM_OCPreload_Enable);
+	TIM_OC4PreloadConfig(TIM3, TIM_OCPreload_Enable);
 	TIM_OC4Init(TIM3, &TIM3_OCInitStructure);  	
 	TIM_Cmd(TIM3, ENABLE);
 }

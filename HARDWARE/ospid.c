@@ -7,7 +7,7 @@ extern float anglexy, anglegoal,anglenow,pitchgoal,rollgoal;
 extern short gyroxgoal,gyroygoal,gyrozgoal;
 extern 	float pitch,roll,yaw;
 extern short aacx,aacy,aacz,gyrox,gyroy,gyroz;
-
+float pitcherrbias=-0.94,rollerrbias=-0.65;
 
 void initconfig()
 {
@@ -51,7 +51,7 @@ void initconfig()
 
 int16_t Control_PitchPID(void)
 {
-	PitchOPID.CurrentError=pitchgoal-pitch;
+	PitchOPID.CurrentError=pitchgoal-pitch-pitcherrbias;
 	PitchOPID.Pout = PitchOPID.P * PitchOPID.CurrentError;
 	
 	PitchOPID.Iout += PitchOPID.I * PitchOPID.CurrentError;
@@ -65,20 +65,20 @@ int16_t Control_PitchPID(void)
 	PitchOPID.PIDout = PitchOPID.PIDout < -PitchOPID.PIDMax ? -PitchOPID.PIDMax : PitchOPID.PIDout;
 	
 		PitchOPID.LastError = PitchOPID.CurrentError;
-return (short)PitchIPID.PIDout;
+return (short)PitchOPID.PIDout;
 	
 }
 
 int16_t Control_RollPID(void)
 {
-	RollOPID.CurrentError=rollgoal-roll;
+	RollOPID.CurrentError=rollgoal-roll-rollerrbias;
 	RollOPID.Pout = RollOPID.P * RollOPID.CurrentError;
 	
 	RollOPID.Iout += RollOPID.I * RollOPID.CurrentError;
 	RollOPID.Iout = RollOPID.Iout > RollOPID.IMax ? RollOPID.IMax : RollOPID.Iout;
 	RollOPID.Iout = RollOPID.Iout < -RollOPID.IMax ? -RollOPID.IMax : RollOPID.Iout;
 
-		RollOPID.Dout = -RollOPID.D *(RollOPID.CurrentError-RollOPID.LastError);
+		RollOPID.Dout = RollOPID.D *(RollOPID.CurrentError-RollOPID.LastError);
 	
 	RollOPID.PIDout = RollOPID.Pout + RollOPID.Iout + RollOPID.Dout;
 	RollOPID.PIDout = RollOPID.PIDout > RollOPID.PIDMax ? RollOPID.PIDMax : RollOPID.PIDout;

@@ -41,29 +41,50 @@ void fantest()
 }
 void fanmove(int pwmx,int pwmy)     
 {
-	if(pwmx>0)
+	if(pwmx>200)
 	{		
 		PWM8=pwmx;
 		PWM7=0;
 
 	}
+	else if(pwmx<-200)
+	{
+		PWM8=0;
+		PWM7=-pwmx;
+
+	}
 	else
 	{
 		PWM8=0;
-		PWM7=pwmx;
-
+		PWM7=0;
 	}
-		if(pwmy>0)
+		if(pwmy>200)
 	{
 		PWM6=0;					//m4 backward
 		PWM5=pwmy;
 	}
-	else
+	else if(pwmy<-200)
 	{
-		PWM6=pwmy;					//m4 backward
+		PWM6=-pwmy;					//m4 backward
 		PWM5=0;
 
 	}
+	else
+	{
+		PWM6=0;
+		PWM5=0;
+	}
+//		if(pwmy<0)
+//	{
+//		PWM6=0;					//m4 backward
+//		PWM5=pwmy;
+//	}
+//	else
+//	{
+//		PWM6=pwmy;					//m4 backward
+//		PWM5=0;
+
+//	}
 
 }
 
@@ -74,25 +95,25 @@ void dotask1()        //50 cm in 15s,+-2.5com straight line
 			float R,A,omega;
 			MoveTimeCnt+=10;                       //10ms
 		  R=0.3;
-			 A=atan(R/0.6)*57.2958;
+			 A=atan(R/0.805)*57.2958;
 			 omega = 2.0*3.14159*(float)MoveTimeCnt/ priod;	
 	
-			rollset=A*sin(omega);
+			pitchset=A*sin(omega);
 	 
-			pitchgoal=0;
-			PitchOPID.P=80;
-			PitchOPID.I=0;
-			PitchOPID.D=1000;
+			pitchgoal=pitchset;
+			PitchOPID.P=60;
+			PitchOPID.I=0.3;
+			PitchOPID.D=800;
 			ctrlx=Control_PitchPID();
 			
-			rollgoal=rollset;
+			rollgoal=0;
 			RollOPID.P=80;
 			RollOPID.I=0;
-			RollOPID.D=1000;
+			RollOPID.D=3000;
 			ctrly=Control_RollPID();
 	
-			fanmove(ctrlx,ctrly);
-
+//fanmove(ctrlx,ctrly);
+fanmove(-2000,0);
 }
 
 void dotask2()           // len:30----60
@@ -108,21 +129,21 @@ void dotask4()
 		if(fabs(pitch)<45&&fabs(roll)<45)
 		{
 			pitchgoal=0;
-			PitchOPID.P=2;
+			PitchOPID.P=80;
 			PitchOPID.I=0;
-			PitchOPID.D=100;
+			PitchOPID.D=5000;
 			ctrlx=Control_PitchPID();
 			
 			rollgoal=0;
-			RollOPID.P=2;
+			RollOPID.P=80;
 			RollOPID.I=0;
-			RollOPID.D=100;
+			RollOPID.D=5000;
 			ctrly=Control_RollPID();
 			
-			fanmove(0,800);
+//			fanmove(0,-2000);
 		
-//			fanmove(ctrlx,ctrly);
-//						fantest();
+			fanmove(ctrlx,ctrly);
+//	fanmove(ctrlx,0);
 
 		}
 }

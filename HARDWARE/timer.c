@@ -5,7 +5,7 @@
 #include "inv_mpu.h"
 #include "inv_mpu_dmp_motion_driver.h" 
 #include "ospid.h"
- int i;
+ int i,dmpresetCounter;
 
 extern float Angle,Gyro_x;         //小车滤波后倾斜角度/角速度	
 extern float Angle_x_temp;  //由加速度计算的x倾斜角度
@@ -21,7 +21,13 @@ extern 	short aacx,aacy,aacz;		//加速度传感器原始数据
 extern	short gyrox,gyroy,gyroz;	//陀螺仪原始数据
 extern float pitch,roll,yaw; 		//欧拉角
 extern void usart1_report_imu(short aacx,short aacy,short aacz,short gyrox,short gyroy,short gyroz,short roll,short pitch,short yaw);
-extern int ctrlx,ctrly;  
+extern int ctrlx,ctrly; 
+extern	float imua[3],imuw[3],imuangle[3];
+extern float rollset,pitchset;
+extern PID_Type PitchOPID,PitchIPID,RollIPID,RollOPID;
+
+extern float A_P,A_R,A2_P;
+
 
 void TIM6_Int_Init(int psc,int prd)  //arr=500, psc=840  
 {
@@ -55,26 +61,41 @@ void TIM6_DAC_IRQHandler(void)
 	  {
 			
 //get angle ,calc and filter
-		if(mpu_dmp_get_data(&pitch,&roll,&yaw)==0)
-		{ 
-			MPU_Get_Accelerometer(&aacx,&aacy,&aacz);	//得到加速度传感器数据
-			MPU_Get_Gyroscope(&gyrox,&gyroy,&gyroz);	//得到陀螺仪数据
-			if(pitch)
-			{
-		
-			}
-					i++;
-					if(i>300)
-					{
-					  controltask();
-						Angle_Calcu();
-					}
-			usart1_report_imu(Angle_x_temp,Angle_X_Final,Angle_y_temp,Angle_Y_Final,ctrlx/100,ctrly/100,(int)(roll*100),(int)(pitch*100),(int)(yaw*10));
+//		if(mpu_dmp_get_data(&pitch,&roll,&yaw)==0)
+//		{ 
+//			MPU_Get_Accelerometer(&aacx,&aacy,&aacz);	//得到加速度传感器数据
+//			MPU_Get_Gyroscope(&gyrox,&gyroy,&gyroz);	//得到陀螺仪数据
+//					if(i<300)															//waiting for self test
+//					{
+//						i++;
 
+//					}else
+//					{
+//						controltask();
+//						Angle_Calcu();
+//					}
+					
+//				 if(dmpresetCounter >= 500)						//restart every 5s
+//        {
+//            dmpresetCounter = 0;
+//            mpu_set_dmp_state(0);
+//            mpu_set_dmp_state(1);
+//        }
+//        else
+//        {
+//            dmpresetCounter++;
+//        }
+
+					
+	controltask();
+	usart1_report_imu(pitch,pitchset,ctrlx/25,ctrly/25,PitchOPID.Pout,PitchOPID.Dout,RollOPID.Pout,RollOPID.Dout,(int)(yaw*10));
 			
-		}
-		
-  
+//		}
+//		
+//  else
+//	{
+//			i--;
+//	}
 		
 		
 			

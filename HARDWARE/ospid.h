@@ -11,6 +11,7 @@ typedef struct
 	
 	float CurrentError;
 	float LastError;
+	float NextError;
 	float Pout;
 	float Iout;
 	float Dout;
@@ -18,11 +19,14 @@ typedef struct
 	
 	float IMax;
 	float PIDMax;
-	
+	int index;
 //	portTickType LastTick;
 }PID_Type;
 
 void initconfig(void);
 int16_t Control_RollPID(void);
 int16_t Control_PitchPID(void);
+//int16_t Increment_PitchPID(int pwmx);
+int16_t keepangle(void);
+
 #endif

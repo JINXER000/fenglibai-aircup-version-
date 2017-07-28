@@ -22,6 +22,8 @@ void dotask1(void);
 void dotask2(void);
 void dotask3(void);
 void dotask4(void);
+void dotask5(void);
+
 int getworkstate(void);
 void controltask(void);
 

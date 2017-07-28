@@ -4,7 +4,7 @@
 
 #define Pi 	3.1415926
 //卡尔曼噪声参数
-#define dt           0.02		//	0.012
+#define dt           0.01		//	0.012
 #define R_angle      0.5
 #define Q_angle      0.1
 #define Q_gyro       0.1//越大越滞后
@@ -19,6 +19,8 @@ void Kalman_Filter_X(float Accel,float Gyro);
 void Kalman_Filter_Y(float Accel,float Gyro);
 void Kalman_Filter_Z(float Accel, float Gyro);
 void yijiehubu_P(float angle_m, float gyro_m);
+void yijiehubu_R(float angle_m, float gyro_m);
+
 void erjiehubu_P(float angle_m, float gyro_m);
 void Erjielvbo(float angle_m,float gyro_m);
 

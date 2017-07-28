@@ -5,8 +5,13 @@
 #include "inv_mpu.h"
 #include "inv_mpu_dmp_motion_driver.h" 
 #include "ospid.h"
- int i,dmpresetCounter;
+#include "niming.h"
+#include "mympu6050.h"
+#include "math.h"
 
+
+ int i,dmpresetCounter;
+//#define boximu
 extern float Angle,Gyro_x;         //小车滤波后倾斜角度/角速度	
 extern float Angle_x_temp;  //由加速度计算的x倾斜角度
 extern float Angle_y_temp;  //由加速度计算的y倾斜角度
@@ -25,7 +30,7 @@ extern int ctrlx,ctrly;
 extern	float imua[3],imuw[3],imuangle[3];
 extern float rollset,pitchset;
 extern PID_Type PitchOPID,PitchIPID,RollIPID,RollOPID;
-
+extern MPU6050_AxisTypeDef    Axis;  //MPU6050数据结构体
 extern float A_P,A_R,A2_P;
 
 
@@ -60,45 +65,36 @@ void TIM6_DAC_IRQHandler(void)
 	if (TIM_GetITStatus(TIM6,TIM_IT_Update)!= RESET) 
 	  {
 			
-//get angle ,calc and filter
-//		if(mpu_dmp_get_data(&pitch,&roll,&yaw)==0)
-//		{ 
-//			MPU_Get_Accelerometer(&aacx,&aacy,&aacz);	//得到加速度传感器数据
-//			MPU_Get_Gyroscope(&gyrox,&gyroy,&gyroz);	//得到陀螺仪数据
-//					if(i<300)															//waiting for self test
-//					{
-//						i++;
+#ifdef boximu
+	uint8_t i = 0;
+	float pitch_temp1 = 0.0;
+	float roll_temp1 = 0.0;
+	float pitch_temp2 = 0.0;
+	float roll_temp2 = 0.0;
+	static float pitch_sum = 0.0;
+	static float roll_sum = 0.0;
+		
+		for(i=0;i<3;i++)
+		{
+			Angle_Calculate();		
+			
+			pitch_temp1 = (atan(Axis.AccX/Axis.AccZ)*57.2958-0.4);   //计算Pitch角度 0.4为静态偏差角
+			roll_temp1  = (atan(Axis.AccY/Axis.AccZ)*57.2958-0.3);   //计算Roll角度  0.3为静态偏差角
+			
+			pitch_sum += pitch_temp1;
+			roll_sum  += roll_temp1;
+		}
+		
+		pitch_temp1 = pitch_sum / 3.0;	 //取出平均值
+		roll_temp1  = roll_sum  / 3.0;	 //取出平均值
 
-//					}else
-//					{
-//						controltask();
-//						Angle_Calcu();
-//					}
-					
-//				 if(dmpresetCounter >= 500)						//restart every 5s
-//        {
-//            dmpresetCounter = 0;
-//            mpu_set_dmp_state(0);
-//            mpu_set_dmp_state(1);
-//        }
-//        else
-//        {
-//            dmpresetCounter++;
-//        }
-
-					
+		pitch_sum = 0.0;
+		roll_sum = 0.0;
+		
+#endif		
+	
 	controltask();
-	usart1_report_imu(pitch,pitchset,ctrlx/25,ctrly/25,PitchOPID.Pout,PitchOPID.Dout,RollOPID.Pout,RollOPID.Dout,(int)(yaw*10));
-			
-//		}
-//		
-//  else
-//	{
-//			i--;
-//	}
-		
-		
-			
+	usart1_report_imu(PitchOPID.CurrentError*10,PitchOPID.PIDout/25,RollOPID.CurrentError*10,RollOPID.PIDout/25,PitchOPID.Pout/25,PitchOPID.Dout/25,RollOPID.Pout/25,RollOPID.Dout/25,(int)(yaw*10));
 			
     }
 			TIM_ClearITPendingBit(TIM6,TIM_IT_Update);  //清除中断标志位
